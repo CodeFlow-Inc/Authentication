@@ -70,7 +70,4 @@ Contributions are welcome! Please fork the repository and submit a pull request 
 
 
 ## Future Enhancements  
-- Add support for multi-factor authentication (MFA).  
 - Implement password recovery functionality.  
-- Add support for external authentication providers (Google, Facebook, etc.).  
-- Include audit logging for user activity.  
