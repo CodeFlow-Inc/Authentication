@@ -9,16 +9,14 @@ An API for user authentication and authorization built with **ASP.NET Core**, **
 - Extendable user and role models for custom attributes.  
 - Clean Architecture design pattern for scalability and maintainability.  
 
----
 
 ## Getting Started  
 
 ### Prerequisites  
 Before starting, ensure you have the following installed:  
 - [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)  
-- [Docker]([https://www.microsoft.com/en-us/sql-server/sql-server-downloads](https://www.docker.com/))
+- [Docker](https://www.docker.com/)
 
----
 
 ## Project Structure  
 
@@ -29,7 +27,6 @@ The project follows **Clean Architecture** principles with the following layers:
 - **Domain**: Contains core entities and interfaces.  
 - **Infrastructure**: Handles data persistence and third-party integrations.  
 
----
 
 ## API Endpoints  
 
@@ -59,7 +56,6 @@ The project follows **Clean Architecture** principles with the following layers:
 - **GET /api/auth/roles**  
   Retrieve the roles assigned to the authenticated user.  
 
----
 
 ## Security  
 
@@ -67,13 +63,11 @@ The project follows **Clean Architecture** principles with the following layers:
 - JWT tokens are used for stateless authentication and have configurable expiration.  
 - Follow best practices for storing the JWT secret in environment variables or secure stores like Azure Key Vault.  
 
----
 
 ## Contributing  
 
 Contributions are welcome! Please fork the repository and submit a pull request with your changes.  
 
----
 
 ## Future Enhancements  
 - Add support for multi-factor authentication (MFA).  
