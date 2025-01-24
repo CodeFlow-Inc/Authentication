@@ -1,7 +1,3 @@
-Aqui está um exemplo de um **README** para a aplicação de autenticação utilizando **Entity Framework Core** e **ASP.NET Core Identity**:
-
----
-
 # AuthApi  
 
 An API for user authentication and authorization built with **ASP.NET Core**, **Entity Framework Core**, and **ASP.NET Core Identity**. The project provides a foundation for managing user authentication, role-based access control, and JWT token issuance.
