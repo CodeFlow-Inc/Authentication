@@ -3,7 +3,7 @@ using Authentication.Domain.Interface;
 using Authentication.Infrastructure.Persistence;
 using Authentication.Infrastructure.Repositories;
 using Authentication.WebApi.Ioc;
-using CodeFlow.Start.Lib.Config;
+using CodeFlow.Start.Package.Config;
 using Destructurama;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -35,13 +35,10 @@ builder.Services.AddDbContextPool<SqlContext>(options =>
 builder.Services.ConfigureDatabaseSqlServer<SqlContext>(sqlConnection!);
 builder.Services.UpdateMigrationDatabase<SqlContext>();
 
-
 builder.Services.AddIdentity<ApplicationUser, ApplicationRole>()
 	.AddEntityFrameworkStores<SqlContext>()
 	.AddDefaultTokenProviders();
 builder.Services.ConfigureAuthentication(builder.Configuration);
-
-
 
 // Configuração do Swagger
 builder.Services.AddEndpointsApiExplorer();
@@ -53,7 +50,6 @@ builder.Services.AddApiVersioning(options =>
 	options.ReportApiVersions = true;
 });
 builder.Services.ConfigureSwagger();
-
 
 // Repositories
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();

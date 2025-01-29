@@ -1,12 +1,12 @@
 ﻿using Authentication.Domain.Entities;
 using Authentication.Infrastructure.Mappings;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using CodeFlow.Data.Context.Package.Base.Context;
 using Microsoft.EntityFrameworkCore;
 
 namespace Authentication.Infrastructure.Persistence;
 
 public class SqlContext(DbContextOptions<SqlContext> opts)
-	: IdentityDbContext<ApplicationUser, ApplicationRole, int>(opts)
+	: BaseIdentityDbContex<ApplicationUser, ApplicationRole, int>(opts)
 {
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
 	{
