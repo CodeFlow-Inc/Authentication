@@ -61,12 +61,24 @@ public class AuthAppService(
 	{
 		var userExists = await userManager.FindByNameAsync(signUpDTO.Username);
 		if (userExists != null)
-			throw new ArgumentException("Username already exists!");
+		{
+			logger.LogInformation($"Usuário {signUpDTO.Username} já existe em nosso banco de dados");
+			throw new ArgumentException("Usuário já existe!");
+		}
 
 		userExists = await userManager.FindByEmailAsync(signUpDTO.Email);
 		if (userExists != null)
-			throw new ArgumentException("Email already exists!");
+		{
+			logger.LogInformation($"Email {signUpDTO.Email} já existe em nosso banco de dados");
+			throw new ArgumentException("Esse email já existe em nossa base!");
+		}
 
+		if (signUpDTO.Password != signUpDTO.PasswordConfirm)
+		{
+			logger.LogInformation($"As senhas não se coincidem!");
+			throw new ArgumentException("As senhas estão incorretas!");
+		}
+			
 		ApplicationUser user;
 
 		user = new ApplicationUser()
@@ -79,8 +91,11 @@ public class AuthAppService(
 		var result = await userManager.CreateAsync(user, signUpDTO.Password);
 
 		if (!result.Succeeded)
+		{
+			logger.LogInformation($"Cadastro do usuário {signUpDTO.Username} falhou!");
 			throw new ArgumentException("Cadastro do usuário falhou.");
-
+		}
+	
 		return true;
 	}
 
@@ -88,11 +103,18 @@ public class AuthAppService(
 	{
 		var user = await userManager.FindByNameAsync(signInDTO.Username);
 		if (user == null)
+		{
+			logger.LogInformation($"Usuário {signInDTO.Username} não existe em nosso banco!");
 			throw new ArgumentException("Usuário não encontrado.");
+		}
+			
 
 		if (!await userManager.CheckPasswordAsync(user, signInDTO.Password))
+		{
+			logger.LogInformation("Senha informada incorreta!");
 			throw new ArgumentException("Senha inválida.");
-
+		}
+			
 		var userRoles = await userManager.GetRolesAsync(user);
 
 		var authClaims = new List<Claim>
