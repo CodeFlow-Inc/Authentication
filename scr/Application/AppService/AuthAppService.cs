@@ -34,7 +34,9 @@ public class AuthAppService(
 		findUser.Email = user.Email;
 		findUser.UserName = user.UserName;
 
+		await unitOfWork.BeginTransactionAsync();
 		await unitOfWork.AuthRepository.UpdateAsync(findUser, findUser.Id);
+		await unitOfWork.CommitAsync();
 	}
 
 	public async Task<bool> DeleteUser(int userId)
@@ -42,7 +44,9 @@ public class AuthAppService(
 		ApplicationUser findUser = await unitOfWork.AuthRepository.GetByIdAsync(userId) 
 			?? throw new ArgumentException("Usuário não encontrado");
 
+		await unitOfWork.BeginTransactionAsync();
 		await unitOfWork.AuthRepository.DeleteAsync(findUser, findUser.Id);
+		await unitOfWork.CommitAsync();
 
 		return true;
 	}
@@ -78,14 +82,17 @@ public class AuthAppService(
 			UserName = signUpDTO.Username
 		};
 
+		await unitOfWork.BeginTransactionAsync();
 		var result = await userManager.CreateAsync(user, signUpDTO.Password);
 
 		if (!result.Succeeded)
 		{
+			await unitOfWork.RollbackAsync();
 			logger.LogInformation($"Cadastro do usuário {signUpDTO.Username} falhou!");
 			throw new ArgumentException("Cadastro do usuário falhou.");
 		}
-	
+		await unitOfWork.CommitAsync();
+
 		return true;
 	}
 
