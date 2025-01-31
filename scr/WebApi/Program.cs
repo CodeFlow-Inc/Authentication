@@ -1,5 +1,4 @@
 using Authentication.Domain.Entities;
-using Authentication.Domain.Interface;
 using Authentication.Infrastructure.Persistence;
 using Authentication.Infrastructure.Repositories;
 using Authentication.WebApi.Ioc;

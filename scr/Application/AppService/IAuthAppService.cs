@@ -11,5 +11,4 @@ public interface IAuthAppService
 	Task<bool> DeleteUser(int userId);
 	void UpdateUser(ApplicationUser user);
 	Task<ApplicationUser> GetUserByIdAsync(int userId);
-	Task<List<ApplicationUser>> ListUsers();
 }

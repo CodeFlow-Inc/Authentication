@@ -1,6 +1,6 @@
 ﻿using Authentication.Aplication.DTOs;
 using Authentication.Domain.Entities;
-using Authentication.Domain.Interface;
+using Authentication.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -13,46 +13,36 @@ using System.Text;
 namespace Authentication.Aplication.AppService;
 
 public class AuthAppService(
-	IAuthRepository userRepository,
+	IUnitOfWork unitOfWork,
 	ILogger<AuthAppService> logger,
 	IConfiguration configuration,
 	UserManager<ApplicationUser> userManager,
 	IHttpContextAccessor httpContextAccessor) : IAuthAppService
 {
-	public async Task<List<ApplicationUser>> ListUsers()
-	{
-		List<ApplicationUser> listUsers = await userRepository.ListUsers();
-
-		return listUsers;
-	}
-
 	public async Task<ApplicationUser> GetUserByIdAsync(int userId)
 	{
-		ApplicationUser user = await userRepository.GetUserByIdAsync(userId);
+		var user = await unitOfWork.AuthRepository.GetByIdAsync(userId);
 
-		if (user == null)
-			throw new ArgumentException("Usuário não existe!");
-
-		return user;
+		return user ?? throw new ArgumentException("Usuário não existe!");
 	}
 
 	public async void UpdateUser(ApplicationUser user)
 	{
-		ApplicationUser findUser = await userRepository.GetUserByIdAsync(user.Id) ?? throw new ArgumentException("Usuário não encontrado");
+		ApplicationUser findUser = await unitOfWork.AuthRepository.GetByIdAsync(user.Id) 
+			?? throw new ArgumentException("Usuário não encontrado");
 
 		findUser.Email = user.Email;
 		findUser.UserName = user.UserName;
 
-		await userRepository.UpdateAsync(findUser);
+		await unitOfWork.AuthRepository.UpdateAsync(findUser, findUser.Id);
 	}
 
 	public async Task<bool> DeleteUser(int userId)
 	{
-		ApplicationUser findUser = await userRepository.GetUserByIdAsync(userId);
-		if (findUser == null)
-			throw new ArgumentException("Usuário não encontrado");
+		ApplicationUser findUser = await unitOfWork.AuthRepository.GetByIdAsync(userId) 
+			?? throw new ArgumentException("Usuário não encontrado");
 
-		await userRepository.DeleteAsync(findUser);
+		await unitOfWork.AuthRepository.DeleteAsync(findUser, findUser.Id);
 
 		return true;
 	}
@@ -119,10 +109,10 @@ public class AuthAppService(
 
 		var authClaims = new List<Claim>
 		{
-			new Claim(ClaimTypes.Name, user.UserName),
-			new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-			new Claim(ClaimTypes.Email, user.Email),
-			new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+			new(ClaimTypes.Name, user.UserName),
+			new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+			new(ClaimTypes.Email, user.Email),
+			new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
 		};
 
 		foreach (var userRole in userRoles)
@@ -138,7 +128,7 @@ public class AuthAppService(
 			expires: DateTime.Now.AddHours(3),
 			claims: authClaims,
 			signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
-			);
+		);
 
 		return new SsoDTO(new JwtSecurityTokenHandler().WriteToken(token), token.ValidTo);
 	}
