@@ -1,0 +1,29 @@
+services:
+  seq:
+    image: datalust/seq
+    container_name: auth-serilog-seq
+    environment:
+      - ACCEPT_EULA=Y
+    ports:
+      - "5341:80"
+    networks:
+      - logging-network
+    restart: always
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: Authentication.MSSQL
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Pass@dev123
+    ports:
+      - "1433:1433"
+    networks:
+      - sql-network
+    restart: always
+
+networks:
+  logging-network:
+    driver: bridge
+  sql-network:
+    driver: bridge
