@@ -8,7 +8,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Data.Context.Package" Version="1.1.2" />
+		<PackageReference Include="Data.Context.Package" Version="1.1.6" />
 	</ItemGroup>
 
 	<ItemGroup>

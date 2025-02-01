@@ -1,5 +1,5 @@
 ﻿using Authentication.Aplication.AppService;
-using Authentication.Domain.Interface;
+using Authentication.Infrastructure.Persistence;
 using Authentication.Infrastructure.Repositories;
 
 namespace Authentication.WebApi.Ioc;
@@ -35,6 +35,7 @@ public static class ServiceIoc
 	/// <param name="services"></param>
 	private static IServiceCollection ConfigureRepositoryIoc(this IServiceCollection services)
 	{
+		services.AddScoped<IUnitOfWork, UnitOfWork>();
 		services.AddScoped<IAuthRepository, AuthRepository>();
 		return services;
 	}
