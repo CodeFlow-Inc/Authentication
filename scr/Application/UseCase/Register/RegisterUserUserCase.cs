@@ -3,18 +3,16 @@ using Authentication.Domain.Entities;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Identity;
 using Authentication.Infrastructure.Persistence;
-using Authentication.Aplication.DTOs;
 using Authentication.Aplication.UseCase.Register.Dto.Request;
 using Authentication.Aplication.UseCase.Register.Dto.Response;
 
-namespace Authentication.Application.UseCases.Commands.Handlers;
+namespace Authentication.Aplication.UseCase.Register;
 
 public class RegisterUserUseCase(
 	IUnitOfWork unitOfWork,
 	UserManager<ApplicationUser> userManager,
 	ILogger<RegisterUserUseCase> logger) : IRequestHandler<RegisterRequest, RegisterReponse>
 {
-
 	public async Task<RegisterReponse> Handle(
 		RegisterRequest request,
 		CancellationToken cancellationToken)

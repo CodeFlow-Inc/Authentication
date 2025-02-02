@@ -1,13 +1,13 @@
-﻿using CodeFlow.Data.Context.Package.Tracking;
+﻿using Authentication.Infrastructure.Persistence;
+using CodeFlow.Data.Context.Package.Tracking;
 using CodeFlow.Start.Package.WebTransfer.Base;
 using CodeFlow.Start.Package.WebTransfer.Base.Response;
-using ExpensesControl.Infrastructure.SqlServer.Persistence;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 
-namespace ExpensesControl.Application.Behavior;
+namespace Authentication.Aplication.Behavior;
 
 public class CommandFailureBehavior<TRequest, TResponse>(ILogger<CommandFailureBehavior<TRequest, TResponse>> logger, SqlContext dbContext, IConfiguration config) : IPipelineBehavior<TRequest, TResponse>
 	where TRequest : notnull
