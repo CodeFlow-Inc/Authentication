@@ -73,9 +73,7 @@ public class AuthAppService(
 			throw new ArgumentException("As senhas estão incorretas!");
 		}
 			
-		ApplicationUser user;
-
-		user = new ApplicationUser()
+		var user = new ApplicationUser()
 		{
 			Email = signUpDTO.Email,
 			SecurityStamp = Guid.NewGuid().ToString(),
