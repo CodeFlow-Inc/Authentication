@@ -1,13 +1,14 @@
-﻿using Authentication.Aplication.AppService;
-using Authentication.Aplication.DTOs;
-using Authentication.Domain.Entities;
-using CodeFlow.Start.Package.WebTransfer.Base.Response;
+﻿using CodeFlow.Start.Package.WebTransfer.Base.Response;
 using CodeFlow.Start.Package.WebTransfer.Base;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
-using Authentication.Aplication.UseCase.Register.Dto.Request;
+using Authentication.Aplication.UseCase.Register.Request;
+using Authentication.Aplication.UseCase.Login.Request;
+using Authentication.Aplication.UseCase.Login.Response;
+using Authentication.Aplication.UseCase.CurrentUser.Request;
+using Authentication.Aplication.UseCase.CurrentUser.Response;
 
 namespace Authentication.WebApi.Controllers;
 
@@ -15,7 +16,7 @@ namespace Authentication.WebApi.Controllers;
 [ApiVersion("1")]
 [Route("api/v{version:apiVersion}/[controller]")]
 [ApiController]
-public class AuthController(IAuthAppService authService, IMediator mediator) : ControllerBase
+public class AuthController(IMediator mediator) : ControllerBase
 {
 	/// <summary>
 	/// Registers a new user in the system.
@@ -46,50 +47,61 @@ public class AuthController(IAuthAppService authService, IMediator mediator) : C
 		return Ok(response);
 	}
 
+	/// <summary>
+	/// Authenticates a user and generates an access token.
+	/// </summary>
+	/// <param name="request">The login request containing user credentials.</param>
+	/// <returns>Returns an access token if authentication is successful, or an error response if authentication fails.</returns>
 	[AllowAnonymous]
-	[HttpPost("sign-up")]
-	public async Task<ActionResult> SignUp([FromBody] SignUpDTO signUpDTO)
+	[HttpPost("login")]
+	[SwaggerOperation(
+		Summary = "Authenticate user",
+		Description = "Validates user credentials and generates a JWT access token upon successful authentication."
+	)]
+	[SwaggerResponse(StatusCodes.Status200OK, "User successfully authenticated.", typeof(LoginResponse))]
+	[SwaggerResponse(StatusCodes.Status400BadRequest, "Invalid credentials or request format.", typeof(BaseResponse))]
+	[SwaggerResponse(StatusCodes.Status401Unauthorized, "Authentication failed due to invalid credentials.", typeof(BaseResponse))]
+	[SwaggerResponse(StatusCodes.Status500InternalServerError, "Unexpected server error.", typeof(BaseResponse))]
+	public async Task<IActionResult> Login([FromBody] LoginRequest request)
 	{
-		try
-		{
-			bool ret = await authService.SignUp(signUpDTO);
+		var response = await mediator.Send(request);
 
-			return Ok(ret);
-		}
-		catch (Exception ex)
+		if (!response.IsSuccess)
 		{
-			return BadRequest(ex.Message);
+			return response.ErrorType switch
+			{
+				ErrorType.InvalidCredentials => Unauthorized(response),
+				ErrorType.BusinessRuleError => BadRequest(response),
+				_ => StatusCode(StatusCodes.Status500InternalServerError, response)
+			};
 		}
+		return Ok(response);
 	}
 
-	[AllowAnonymous]
-	[HttpPost("sign-in")]
-	public async Task<ActionResult> SignIn([FromBody] SignInDTO signInDTO)
+	/// <summary>
+	/// Retrieves the current authenticated user's details.
+	/// </summary>
+	/// <returns>Returns the current user's details or an error response if the user is not found.</returns>
+	[HttpGet("current-user")]
+	[SwaggerOperation(
+		Summary = "Get current authenticated user",
+		Description = "Retrieves details of the currently authenticated user."
+	)]
+	[SwaggerResponse(StatusCodes.Status200OK, "User details retrieved successfully.", typeof(CurrentUserResponse))]
+	[SwaggerResponse(StatusCodes.Status401Unauthorized, "User is not authenticated.", typeof(BaseResponse))]
+	[SwaggerResponse(StatusCodes.Status500InternalServerError, "Unexpected server error.", typeof(BaseResponse))]
+	public async Task<IActionResult> GetCurrentUser()
 	{
-		try
-		{
-			SsoDTO ssoDTO = await authService.SignIn(signInDTO);
+		var response = await mediator.Send(new CurrentUserRequest());
 
-			return Ok(ssoDTO);
-		}
-		catch (Exception ex)
+		if (!response.IsSuccess)
 		{
-			return BadRequest(ex.Message);
+			return response.ErrorType switch
+			{
+				ErrorType.InvalidCredentials => Unauthorized(response),
+				_ => StatusCode(StatusCodes.Status500InternalServerError, response)
+			};
 		}
-	}
-
-	[HttpGet("get-current-user")]
-	public async Task<ActionResult> GetCurrentUser()
-	{
-		try
-		{
-			ApplicationUser currentUser = await authService.GetCurrentUser();
-
-			return Ok(currentUser);
-		}
-		catch (Exception ex)
-		{
-			return BadRequest(ex.Message);
-		}
+		return Ok(response);
 	}
 }

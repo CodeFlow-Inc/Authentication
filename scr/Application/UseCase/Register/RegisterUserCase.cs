@@ -3,34 +3,34 @@ using Authentication.Domain.Entities;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Identity;
 using Authentication.Infrastructure.Persistence;
-using Authentication.Aplication.UseCase.Register.Dto.Request;
-using Authentication.Aplication.UseCase.Register.Dto.Response;
+using Authentication.Aplication.UseCase.Register.Response;
+using Authentication.Aplication.UseCase.Register.Request;
 
 namespace Authentication.Aplication.UseCase.Register;
 
-public class RegisterUserUseCase(
+public class RegisterUseCase(
 	IUnitOfWork unitOfWork,
 	UserManager<ApplicationUser> userManager,
-	ILogger<RegisterUserUseCase> logger) : IRequestHandler<RegisterRequest, RegisterReponse>
+	ILogger<RegisterUseCase> logger) : IRequestHandler<RegisterRequest, RegisterResponse>
 {
-	public async Task<RegisterReponse> Handle(
+	public async Task<RegisterResponse> Handle(
 		RegisterRequest request,
 		CancellationToken cancellationToken)
 	{
-		var response = new RegisterReponse();
+		var response = new RegisterResponse();
 
 		var existingUser = await userManager.FindByNameAsync(request.Username);
 		if (existingUser != null)
 		{
 			logger.LogInformation("Username {Username} já existe.", request.Username);
-			return response.AddErrorMessage<RegisterReponse>("Usuário já existe.");
+			return response.AddErrorMessage<RegisterResponse>("Usuário já existe.");
 		}
 
 		existingUser = await userManager.FindByEmailAsync(request.Email);
 		if (existingUser != null)
 		{
 			logger.LogInformation("Email {Email} já existe.", request.Email);
-			response.AddErrorMessage<RegisterReponse>("Email já cadastrado.");
+			response.AddErrorMessage<RegisterResponse>("Email já cadastrado.");
 		}
 
 		var user = ApplicationUser.Create(request.Username, request.Email);
@@ -40,7 +40,7 @@ public class RegisterUserUseCase(
 		{
 			await unitOfWork.RollbackAsync();
 			logger.LogInformation("Cadastro do usuário {Username} falhou!", request.Username);
-			return response.AddErrorMessage<RegisterReponse>("Cadastro do usuário falhou.");
+			return response.AddErrorMessage<RegisterResponse>("Cadastro do usuário falhou.");
 		}
 
 		response.SetResult(result.Succeeded);

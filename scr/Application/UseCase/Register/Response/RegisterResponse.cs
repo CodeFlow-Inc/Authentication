@@ -1,7 +1,7 @@
 ﻿using CodeFlow.Start.Package.WebTransfer.Base.Response;
 
-namespace Authentication.Aplication.UseCase.Register.Dto.Response;
-public class RegisterReponse : BaseResponse, IResultResponse<bool>
+namespace Authentication.Aplication.UseCase.Register.Response;
+public class RegisterResponse : BaseResponse, IResultResponse<bool>
 {
 	/// <summary>
 	/// The response value of the use case.
