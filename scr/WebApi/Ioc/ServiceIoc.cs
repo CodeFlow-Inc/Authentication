@@ -1,4 +1,4 @@
-﻿using Authentication.Aplication.AppService;
+﻿using Authentication.Aplication.Config;
 using Authentication.Infrastructure.Persistence;
 using Authentication.Infrastructure.Repositories;
 
@@ -15,18 +15,10 @@ public static class ServiceIoc
 	/// <param name="services">The service collection.</param>
 	public static void ConfigureServiceIoc(this IServiceCollection services)
 	{
-		services.ConfigureAppServiceIoc();
-		services.ConfigureRepositoryIoc();
-	}
-
-	/// <summary>
-	/// Configures IoC container for app services.
-	/// </summary>
-	/// <param name="services"></param>
-	private static IServiceCollection ConfigureAppServiceIoc(this IServiceCollection services)
-	{
-		services.AddScoped<IAuthAppService, AuthAppService>();
-		return services;
+		services
+			.ConfigureRepositoryIoc()
+			.ConfigureValidator()
+			.AddMediatR();
 	}
 
 	/// <summary>
