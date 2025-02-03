@@ -2,7 +2,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
-namespace Authentication.Aplication.Identity;
+namespace Authentication.Domain.Identity;
 
 public class TokenJWTBuilder
 {

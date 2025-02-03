@@ -1,4 +1,4 @@
-﻿namespace Authentication.Aplication.Identity;
+﻿namespace Authentication.Domain.Identity;
 
 public static class CustomClaimTypes
 {
